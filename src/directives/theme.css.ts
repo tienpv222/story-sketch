@@ -1,12 +1,9 @@
 import RESET_CSS from "the-new-css-reset/css/reset.css?raw";
-import { glob } from "goober";
 import { createSpectrumStyle } from "../utils/spectrum-style";
 
-const {
-  createClass,
-  createVar,
-  addStyle: addGlobalStyle,
-} = createSpectrumStyle(import.meta.url);
+const { createClass, createVar, addStyle } = createSpectrumStyle(
+  import.meta.url
+);
 
 export const GRAY = {
   50: createVar(),
@@ -132,21 +129,20 @@ export const FONT = {
   1300: createVar(),
 } as const;
 
-// https://spectrum.adobe.com/page/motion/
 export const MOTION = {
-  OUT: "cubic-bezier(0, 0, 0.40, 1)",
-  IN: "cubic-bezier(0.50, 0, 1, 1)",
-  IN_OUT: "cubic-bezier(0.45, 0, 0.40, 1)",
-  MICRO: "130ms",
-  MACRO: "250ms",
+  OUT: createVar(),
+  IN: createVar(),
+  IN_OUT: createVar(),
+  MICRO: createVar(),
+  MACRO: createVar(),
 };
 
 export const THEME_DARK = createClass();
 export const THEME_LIGHT = createClass();
 
-addGlobalStyle(RESET_CSS);
+addStyle(RESET_CSS);
 
-addGlobalStyle({
+addStyle({
   ":root": {
     [STATIC_BLUE[200]]: "#5aa9fa",
     [STATIC_BLUE[300]]: "#4b9cf5",
@@ -223,6 +219,13 @@ addGlobalStyle({
     [FONT[1100]]: "45px",
     [FONT[1200]]: "50px",
     [FONT[1300]]: "60px",
+
+    // https://spectrum.adobe.com/page/motion/
+    [MOTION.OUT]: "cubic-bezier(0, 0, 0.4, 1)",
+    [MOTION.IN]: "cubic-bezier(0.5, 0, 1, 1)",
+    [MOTION.IN_OUT]: "cubic-bezier(0.45, 0, 0.4, 1)",
+    [MOTION.MICRO]: "130ms",
+    [MOTION.MACRO]: "250ms",
 
     fontFamily: "Source Sans Pro",
   },

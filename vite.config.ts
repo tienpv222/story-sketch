@@ -5,7 +5,9 @@ import pluginIcons from "unplugin-icons/vite";
 import { FileSystemIconLoader } from "unplugin-icons/loaders";
 
 const transformIcon = (svg: string) => {
-  return svg.replace("<svg", '<svg fill="currentColor"');
+  return svg
+    .replaceAll(/xmlns=[^\s]+/g, "")
+    .replace("<svg", '<svg fill="currentColor"');
 };
 
 export default defineConfig({

@@ -9,7 +9,8 @@ export const app = createMutable({
 export const App = () => {
   return (
     <div class={APP} use:theme={{ color: "light" }}>
-      <Checkbox />
+      <Checkbox label="Checkbox" />
+      <Checkbox label="Checkbox" indeterminate />
     </div>
   );
 };
