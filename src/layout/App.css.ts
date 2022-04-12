@@ -1,12 +1,16 @@
-import { theme } from "../components/Theme.css";
-import { createRecipe } from "../utils/vanilla-extract";
+import { SIZE } from "../directives/theme.css";
+import { createModuleStyle } from "../utils/style";
 
-export const appRecipe = createRecipe({
-  base: {
+const { createClass, addStyle } = createModuleStyle(import.meta.url, "app");
+
+export const APP = createClass();
+
+addStyle({
+  [APP]: {
     width: "100vw",
     height: "100vh",
-    padding: theme.size[115],
-    display: "flex",
-    gap: theme.size[115],
+    padding: SIZE[115],
+    // display: "flex",
+    gap: SIZE[115],
   },
 });

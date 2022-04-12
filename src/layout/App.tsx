@@ -1,20 +1,15 @@
 import { createMutable } from "solid-js/store";
-import { ActionButton } from "../components/ActionButton";
-import { Theme } from "../components/Theme";
-import { useRecipe } from "../utils/vanilla-extract";
-import { appRecipe } from "./App.css";
-import IconEdit from "@adobe/spectrum-css-workflow-icons/18/Edit.svg";
+import { Checkbox } from "../components/Checkbox";
+import { APP } from "./App.css";
 
 export const app = createMutable({
   darkTheme: false,
 });
 
-export const App = useRecipe(appRecipe)((attrs) => {
+export const App = () => {
   return (
-    <Theme {...attrs}>
-      <ActionButton icon={IconEdit} onClick={() => console.log("foo")} />
-      <ActionButton label="Edit" />
-      <ActionButton icon={IconEdit} label="Edit" />
-    </Theme>
+    <div class={APP} use:theme={{ color: "light" }}>
+      <Checkbox />
+    </div>
   );
-});
+};

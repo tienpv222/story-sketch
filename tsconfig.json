@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
@@ -8,6 +9,6 @@
     "paths": {
       "/src/*": ["./src/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client", "unplugin-icons/types/solid"]
   }
 }
