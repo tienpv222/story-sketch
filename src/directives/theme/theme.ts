@@ -1,13 +1,13 @@
 import { createEffect } from "solid-js";
-import { THEME_DARK, THEME_LIGHT } from "./theme.css";
+import { THEME } from "./theme.css";
 
 export type ThemeOptions = {
   color?: "light" | "dark";
 };
 
 export const themeMap = {
-  light: THEME_LIGHT,
-  dark: THEME_DARK,
+  light: THEME.LIGHT,
+  dark: THEME.DARK,
 };
 
 export const theme = (element: HTMLElement, getOptions: () => ThemeOptions) => {
@@ -15,8 +15,8 @@ export const theme = (element: HTMLElement, getOptions: () => ThemeOptions) => {
 
   createEffect(() => {
     const { color } = getOptions();
-    classList.remove(THEME_LIGHT, THEME_DARK);
-    if (color) classList.add(themeMap[color]);
+    classList.remove(THEME.LIGHT, THEME.DARK);
+    if (color) classList.add(THEME.ROOT, themeMap[color]);
   });
 };
 
