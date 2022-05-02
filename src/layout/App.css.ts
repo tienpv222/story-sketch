@@ -1,16 +1,25 @@
-import { SIZE } from "../directives/theme.css";
-import { createModuleStyle } from "../utils/style";
+import { createAppStyle } from "../utils/styles";
+import "@fontsource/source-sans-3/500.css";
+import { SIZE } from "../directives/theme";
 
-const { createClass, addStyle } = createModuleStyle(import.meta.url, "app");
+const { createClass, addStyle } = createAppStyle(MODULE_PATH);
 
-export const APP = createClass();
+export const APP = {
+  ROOT: createClass(),
+  NAV: createClass(),
+};
 
 addStyle({
-  [APP]: {
+  [APP.ROOT]: {
     width: "100vw",
     height: "100vh",
-    padding: SIZE[115],
     // display: "flex",
-    gap: SIZE[115],
+    fontFamily: '"Source Sans 3"',
+  },
+
+  [APP.NAV]: {
+    width: SIZE[500],
+    display: "flex",
+    flexFlow: "column",
   },
 });

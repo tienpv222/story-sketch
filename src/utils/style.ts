@@ -1,50 +1,64 @@
-import { glob, CSSAttribute } from "goober";
+import { CSSObject, injectGlobal } from "@emotion/css";
 import hash from "@emotion/hash";
 
-export const createModuleUid = (moduleUrl: string) => {
-  if (import.meta.env.DEV) {
-    moduleUrl = moduleUrl.match(/[^?]+/)?.[0] ?? moduleUrl;
-  }
+export type StyleClass = `_${string}`;
+export type StyleVar = `--${string}`;
+export type StyleRgb = `--rgb-${string}`;
 
+export const createModuleUid = (modulePath: string) => {
   let id = 0;
-  return () => hash(`${moduleUrl}${++id}`);
+  return () => hash(`${modulePath}${++id}`);
 };
 
 export const createModuleStyle = (moduleUrl: string, layer: string) => {
-  const createVarUid = createModuleUid(moduleUrl);
-  const createClassUid = createModuleUid(moduleUrl);
+  const createUid = createModuleUid(moduleUrl);
 
   return {
-    createVar: () => `--${createVarUid()}`,
-    createClass: () => `_${createClassUid()}`,
-    addStyle(style: CSSAttribute | string) {
-      addStyle(style, layer);
-    },
+    createClass: () => `_${createUid()}` as StyleClass,
+    createVar: () => `--${createUid()}` as StyleVar,
+    createRgb: () => `--rgb-${createUid()}` as StyleRgb,
+    addStyle: (style: string | CSSObject) => addStyle(style, layer),
   };
 };
 
-export const addStyle = (style: CSSAttribute | string, layer: string) => {
+export const addStyle = (style: string | CSSObject, layer: string) => {
   if (typeof style === "string") {
-    glob(`@layer ${layer} {${style}}`);
+    injectGlobal(`@layer ${layer} {${style}}`);
   } else {
-    glob({
+    injectGlobal({
       [`@layer ${layer}`]: resolveStyle(style),
     });
   }
 };
 
-export const resolveStyle = (style: CSSAttribute): CSSAttribute => {
+export const resolveStyle = (style: CSSObject): CSSObject => {
   return Object.fromEntries(
     Object.entries(style).map(([key, value]) => {
       key = key.replaceAll("_", "._");
 
-      if (typeof value === "object" && value !== null) {
-        value = resolveStyle(value);
-      } else if (typeof value === "string") {
-        value = value.replaceAll(/--[a-z0-9]+/g, "var($&)");
+      if (typeof value === "string") {
+        if (!/^--rgb-/.test(key)) {
+          value = value.replaceAll(
+            /(rgba\()?(--rgb-[\w\d]+)/g,
+            (match, rgba, rgb) => (rgba ? match : `rgb(${rgb})`)
+          );
+        }
+
+        value = value.replaceAll(/--[\w\d-]+/g, "var($&)");
+      } else if (typeof value === "object" && value !== null) {
+        value = resolveStyle(value as CSSObject);
       }
 
       return [key, value];
     })
   );
+};
+
+export const createTokens = <TYPE, NAMES extends readonly (number | string)[]>(
+  creator: () => TYPE,
+  names: NAMES
+) => {
+  return Object.fromEntries(
+    names.map((value) => [value, creator()])
+  ) as Readonly<Record<NAMES[number], TYPE>>;
 };

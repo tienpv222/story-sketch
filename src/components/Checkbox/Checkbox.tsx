@@ -1,56 +1,134 @@
-import { ComponentProps, Show, splitProps } from "solid-js";
-import IconCheckmark from "~icons/spectrum-ui/Checkmark100";
-import IconDash from "~icons/spectrum-ui/Dash100";
+import ICON_CHECKMARK from "@spectrum-css/icon/medium/Checkmark100.svg";
+import ICON_DASH from "@spectrum-css/icon/medium/Dash100.svg";
 import {
-  CHECKBOX,
-  CHECKBOX_BOX,
-  CHECKBOX_ICON,
-  CHECKBOX_INPUT,
-  CHECKBOX_INTERDETERMINATE,
-  CHECKBOX_LABEL,
-} from "./Checkbox.css";
+  batch,
+  Component,
+  ComponentProps,
+  createEffect,
+  createSignal,
+  Show,
+} from "solid-js";
+import { createMutable } from "solid-js/store";
+import { Dynamic } from "solid-js/web";
+import { Appear } from "../Appear";
+import { Icon, IconProps } from "../Icon";
+import { CHECKBOX } from "./Checkbox.css";
 
-const inputAttrNames = [
-  "checked",
-  "disabled",
-  "readonly",
-  "onInput",
-  "onChange",
-] as const;
+export type CheckboxState = {
+  selected?: boolean;
+  indeterminate?: boolean;
+};
 
-export type CheckboxProps = ComponentProps<"label"> &
-  Pick<ComponentProps<"input">, typeof inputAttrNames[number]> & {
-    label?: string;
-    indeterminate?: boolean;
-    emphasized?: boolean;
-    invalid?: boolean;
-  };
+export type CheckboxProps = {
+  state?: CheckboxState;
+  label?: string;
+  emphasized?: boolean;
+  invalid?: boolean | string;
+  disabled?: boolean;
+  readonly?: boolean;
+
+  Root?: "label" | Component<ComponentProps<"label">>;
+  Input?: "input" | Component<ComponentProps<"input">>;
+  IconSelected?: typeof Icon | false;
+  IconIndeterminate?: typeof Icon | false;
+  Label?: "span" | Component<ComponentProps<"span">> | false;
+
+  rootProps?: ComponentProps<"label">;
+  inputProps?: ComponentProps<"input">;
+  iconSelectedProps?: IconProps;
+  iconIndeterminateProps?: IconProps;
+  labelProps?: ComponentProps<"span">;
+};
+
+export const checkboxInputOnClick = (state: CheckboxState) => {
+  batch(() => {
+    state.selected = state.indeterminate ? true : !state.selected;
+    state.indeterminate = false;
+  });
+};
 
 export const Checkbox = (props: CheckboxProps) => {
-  const [, attrs] = splitProps(props, ["label"]);
-  const [inputAttrs, labelAttrs] = splitProps(attrs, inputAttrNames);
+  const state = createMutable(props.state ?? {});
+  const [getInputElement, setInputElement] = createSignal<HTMLInputElement>();
+
+  createEffect(() => {
+    getInputElement()?.setCustomValidity(
+      props.invalid ? String(props.invalid) : ""
+    );
+  });
 
   return (
-    <label
-      {...labelAttrs}
+    <Dynamic
+      {...(props.rootProps ?? {})}
+      component={props.Root ?? "label"}
       classList={{
-        [CHECKBOX]: true,
-        [CHECKBOX_INTERDETERMINATE]: props.indeterminate,
+        [CHECKBOX.ROOT]: true,
+        [CHECKBOX.EMPHASIZED]: props.emphasized,
+        [CHECKBOX.READONLY]: props.readonly,
+        ...props.rootProps?.classList,
       }}
     >
-      <input {...inputAttrs} class={CHECKBOX_INPUT} type="checkbox" />
-
-      <div class={CHECKBOX_BOX} />
-
-      <Show
-        when={props.indeterminate}
-        children={<IconDash class={CHECKBOX_ICON} />}
-        fallback={<IconCheckmark class={CHECKBOX_ICON} />}
+      <Dynamic
+        ref={setInputElement}
+        type="checkbox"
+        checked={state.selected}
+        indeterminate={state.indeterminate}
+        disabled={props.disabled}
+        onClick={[checkboxInputOnClick, state]}
+        {...(props.inputProps ?? {})}
+        component={props.Input ?? "input"}
+        classList={{
+          [CHECKBOX.INPUT]: true,
+          ...props.inputProps?.classList,
+        }}
+        tabIndex={props.readonly ? -1 : props.inputProps?.tabIndex}
       />
 
-      <Show when={props.label}>
-        <span class={CHECKBOX_LABEL}>{props.label}</span>
+      <Show when={props.IconSelected !== false}>
+        <Appear
+          when={state.selected && !state.indeterminate}
+          transition={CHECKBOX.ICON_TRANSITION}
+        >
+          <Dynamic
+            src={ICON_CHECKMARK}
+            {...(props.iconSelectedProps ?? {})}
+            component={props.IconSelected ?? Icon}
+            classList={{
+              [CHECKBOX.ICON]: true,
+              ...props.iconSelectedProps?.classList,
+            }}
+          />
+        </Appear>
       </Show>
-    </label>
+
+      <Show when={props.IconIndeterminate !== false}>
+        <Appear
+          when={state.indeterminate}
+          transition={CHECKBOX.ICON_TRANSITION}
+        >
+          <Dynamic
+            src={ICON_DASH}
+            {...(props.iconIndeterminateProps ?? {})}
+            component={props.IconIndeterminate ?? Icon}
+            classList={{
+              [CHECKBOX.ICON]: true,
+              ...props.iconIndeterminateProps?.classList,
+            }}
+          />
+        </Appear>
+      </Show>
+
+      <Show when={props.label}>
+        <Dynamic
+          children={props.label}
+          {...(props.labelProps ?? {})}
+          component={props.Label ?? "span"}
+          classList={{
+            [CHECKBOX.LABEL]: true,
+            ...props.labelProps?.classList,
+          }}
+        />
+      </Show>
+    </Dynamic>
   );
 };

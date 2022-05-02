@@ -1,36 +1,20 @@
+import pluginAutoImport from "unplugin-auto-import/vite";
 import { defineConfig } from "vite";
 import pluginSolid from "vite-plugin-solid";
-import pluginAutoImport from "unplugin-auto-import/vite";
-import pluginIcons from "unplugin-icons/vite";
-import { FileSystemIconLoader } from "unplugin-icons/loaders";
-
-const transformIcon = (svg: string) => {
-  return svg
-    .replaceAll(/xmlns=[^\s]+/g, "")
-    .replace("<svg", '<svg fill="currentColor"');
-};
+import { pluginCssCleanRaw } from "./vite/plugin-minify-css-raw";
+import { pluginModulePath } from "./vite/plugin-module-path";
 
 export default defineConfig({
   plugins: [
     pluginSolid(),
+    pluginCssCleanRaw(),
+    pluginModulePath(),
     pluginAutoImport({
       imports: {
         "/src/directives/theme": ["theme"],
+        "/src/directives/classes": ["classes"],
       },
       dts: false,
-    }),
-    pluginIcons({
-      compiler: "solid",
-      customCollections: {
-        "spectrum-workflow": FileSystemIconLoader(
-          "./node_modules/@adobe/spectrum-css-workflow-icons/18",
-          transformIcon
-        ),
-        "spectrum-ui": FileSystemIconLoader(
-          "./node_modules/@spectrum-css/icon/medium",
-          transformIcon
-        ),
-      },
     }),
   ],
 });

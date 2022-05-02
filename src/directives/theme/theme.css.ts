@@ -9,5 +9,4 @@ export const THEME = {
   DARK: createClass(),
 };
 
-// goober fails without ending semicolon
-addStyle(RESET_CSS.replaceAll("}", ";}"));
+addStyle(RESET_CSS);

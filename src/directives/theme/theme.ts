@@ -16,7 +16,7 @@ export const theme = (element: HTMLElement, getOptions: () => ThemeOptions) => {
   createEffect(() => {
     const { color } = getOptions();
     classList.remove(THEME.LIGHT, THEME.DARK);
-    if (color) classList.add(THEME.ROOT, themeMap[color]);
+    classList.add(THEME.ROOT, themeMap[color ?? "light"]);
   });
 };
 

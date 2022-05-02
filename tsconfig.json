@@ -5,10 +5,11 @@
     "moduleResolution": "node",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "paths": {
       "/src/*": ["./src/*"]
     },
-    "types": ["vite/client", "unplugin-icons/types/solid"]
+    "types": ["vite/client"]
   }
 }

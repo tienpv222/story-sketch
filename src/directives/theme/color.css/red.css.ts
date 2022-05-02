@@ -28,7 +28,14 @@ addStyle({
     [BASE_STATIC_RED[1200]]: "124, 0, 0",
     [BASE_STATIC_RED[1300]]: "97, 0, 0",
     [BASE_STATIC_RED[1400]]: "77, 0, 0",
+
+    [STATIC_RED[400]]: BASE_STATIC_RED[800],
+    [STATIC_RED[500]]: BASE_STATIC_RED[900],
+    [STATIC_RED[600]]: BASE_STATIC_RED[1000],
+    [STATIC_RED[700]]: BASE_STATIC_RED[1100],
+    [STATIC_RED[800]]: BASE_STATIC_RED[1200],
   },
+
   [THEME.LIGHT]: {
     [BASE_RED[100]]: "255, 235, 231",
     [BASE_RED[200]]: "255, 221, 214",
@@ -44,7 +51,13 @@ addStyle({
     [BASE_RED[1200]]: "116, 0, 0",
     [BASE_RED[1300]]: "89, 0, 0",
     [BASE_RED[1400]]: "67, 0, 0",
+
+    [RED[400]]: BASE_RED[800],
+    [RED[500]]: BASE_RED[900],
+    [RED[600]]: BASE_RED[1000],
+    [RED[700]]: BASE_RED[1100],
   },
+
   [THEME.DARK]: {
     [BASE_RED[100]]: "123, 0, 0",
     [BASE_RED[200]]: "141, 0, 0",
@@ -60,5 +73,10 @@ addStyle({
     [BASE_RED[1200]]: "255, 222, 216",
     [BASE_RED[1300]]: "255, 241, 238",
     [BASE_RED[1400]]: "255, 255, 255",
+
+    [RED[400]]: BASE_RED[600],
+    [RED[500]]: BASE_RED[700],
+    [RED[600]]: BASE_RED[800],
+    [RED[700]]: BASE_RED[900],
   },
 });
