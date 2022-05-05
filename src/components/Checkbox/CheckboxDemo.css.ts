@@ -1,7 +1,7 @@
 import { SIZE } from "/src/directives/theme";
 import { createDemoStyle } from "/src/utils/styles";
 
-const { createClass, createVar, addStyle } = createDemoStyle(MODULE_PATH);
+const { createClass, addStyle } = createDemoStyle(MODULE_PATH);
 
 export const CHECKBOX_DEMO = {
   ROOT: createClass(),

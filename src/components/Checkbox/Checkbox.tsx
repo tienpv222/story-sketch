@@ -1,18 +1,12 @@
 import ICON_CHECKMARK from "@spectrum-css/icon/medium/Checkmark100.svg";
 import ICON_DASH from "@spectrum-css/icon/medium/Dash100.svg";
-import {
-  batch,
-  Component,
-  ComponentProps,
-  createEffect,
-  createSignal,
-  Show,
-} from "solid-js";
+import { ComponentProps, Show } from "solid-js";
 import { createMutable } from "solid-js/store";
 import { Dynamic } from "solid-js/web";
-import { Appear } from "../Appear";
-import { Icon, IconProps } from "../Icon";
 import { CHECKBOX } from "./Checkbox.css";
+import { CheckboxIcon, CheckboxIconProps } from "./CheckboxIcon";
+import { CheckboxInput, CheckboxInputProps } from "./CheckboxInput";
+import { getRootProps, getSubProps, SubProps } from "/src/utils/solid";
 
 export type CheckboxState = {
   selected?: boolean;
@@ -21,114 +15,84 @@ export type CheckboxState = {
 
 export type CheckboxProps = {
   state?: CheckboxState;
-  label?: string;
+  label: string;
   emphasized?: boolean;
-  invalid?: boolean | string;
+  invalid?: boolean;
   disabled?: boolean;
-  readonly?: boolean;
-
-  Root?: "label" | Component<ComponentProps<"label">>;
-  Input?: "input" | Component<ComponentProps<"input">>;
-  IconSelected?: typeof Icon | false;
-  IconIndeterminate?: typeof Icon | false;
-  Label?: "span" | Component<ComponentProps<"span">> | false;
-
-  rootProps?: ComponentProps<"label">;
-  inputProps?: ComponentProps<"input">;
-  iconSelectedProps?: IconProps;
-  iconIndeterminateProps?: IconProps;
-  labelProps?: ComponentProps<"span">;
-};
-
-export const checkboxInputOnClick = (state: CheckboxState) => {
-  batch(() => {
-    state.selected = state.indeterminate ? true : !state.selected;
-    state.indeterminate = false;
-  });
-};
+  readOnly?: boolean;
+} & ComponentProps<"label"> &
+  SubProps<"Input", CheckboxInputProps> &
+  SubProps<"IconSelected", CheckboxIconProps> &
+  SubProps<"IconIndeterminate", CheckboxIconProps> &
+  SubProps<"Label", "span">;
 
 export const Checkbox = (props: CheckboxProps) => {
   const state = createMutable(props.state ?? {});
-  const [getInputElement, setInputElement] = createSignal<HTMLInputElement>();
-
-  createEffect(() => {
-    getInputElement()?.setCustomValidity(
-      props.invalid ? String(props.invalid) : ""
-    );
-  });
+  const rootProps = getRootProps(props, [
+    "state",
+    "label",
+    "emphasized",
+    "invalid",
+    "disabled",
+    "readOnly",
+  ]);
+  const inputProps = getSubProps(props, "Input");
+  const iconSelectedProps = getSubProps(props, "IconSelected");
+  const iconIndeterminateProps = getSubProps(props, "IconIndeterminate");
+  const labelProps = getSubProps(props, "Label");
 
   return (
-    <Dynamic
-      {...(props.rootProps ?? {})}
-      component={props.Root ?? "label"}
+    <label
       classList={{
         [CHECKBOX.ROOT]: true,
         [CHECKBOX.EMPHASIZED]: props.emphasized,
-        [CHECKBOX.READONLY]: props.readonly,
-        ...props.rootProps?.classList,
+        [CHECKBOX.READ_ONLY]: props.readOnly,
       }}
+      {...rootProps}
     >
-      <Dynamic
-        ref={setInputElement}
-        type="checkbox"
-        checked={state.selected}
-        indeterminate={state.indeterminate}
-        disabled={props.disabled}
-        onClick={[checkboxInputOnClick, state]}
-        {...(props.inputProps ?? {})}
-        component={props.Input ?? "input"}
-        classList={{
-          [CHECKBOX.INPUT]: true,
-          ...props.inputProps?.classList,
-        }}
-        tabIndex={props.readonly ? -1 : props.inputProps?.tabIndex}
-      />
-
-      <Show when={props.IconSelected !== false}>
-        <Appear
-          when={state.selected && !state.indeterminate}
-          transition={CHECKBOX.ICON_TRANSITION}
-        >
-          <Dynamic
-            src={ICON_CHECKMARK}
-            {...(props.iconSelectedProps ?? {})}
-            component={props.IconSelected ?? Icon}
-            classList={{
-              [CHECKBOX.ICON]: true,
-              ...props.iconSelectedProps?.classList,
-            }}
-          />
-        </Appear>
-      </Show>
-
-      <Show when={props.IconIndeterminate !== false}>
-        <Appear
-          when={state.indeterminate}
-          transition={CHECKBOX.ICON_TRANSITION}
-        >
-          <Dynamic
-            src={ICON_DASH}
-            {...(props.iconIndeterminateProps ?? {})}
-            component={props.IconIndeterminate ?? Icon}
-            classList={{
-              [CHECKBOX.ICON]: true,
-              ...props.iconIndeterminateProps?.classList,
-            }}
-          />
-        </Appear>
-      </Show>
-
-      <Show when={props.label}>
+      <Show when={props.Input !== null}>
         <Dynamic
-          children={props.label}
-          {...(props.labelProps ?? {})}
+          component={props.Input ?? CheckboxInput}
+          state={state}
+          invalid={props.invalid}
+          checked={state.selected}
+          indeterminate={state.indeterminate}
+          disabled={props.disabled}
+          aria-label={props.Label === null ? props.label : undefined}
+          {...inputProps}
+          tabIndex={props.readOnly ? -1 : inputProps.tabIndex}
+        />
+      </Show>
+
+      <Show when={props.IconSelected !== null}>
+        <Dynamic
+          component={props.IconSelected ?? CheckboxIcon}
+          when={state.selected && !state.indeterminate}
+          Icon_src={ICON_CHECKMARK}
+          {...iconSelectedProps}
+        />
+      </Show>
+
+      <Show when={props.IconIndeterminate !== null}>
+        <Dynamic
+          component={props.IconSelected ?? CheckboxIcon}
+          when={state.indeterminate}
+          Icon_src={ICON_DASH}
+          {...iconIndeterminateProps}
+        />
+      </Show>
+
+      <Show when={props.Label !== null}>
+        <Dynamic
           component={props.Label ?? "span"}
+          children={props.label}
+          {...labelProps}
           classList={{
             [CHECKBOX.LABEL]: true,
-            ...props.labelProps?.classList,
+            ...labelProps.classList,
           }}
         />
       </Show>
-    </Dynamic>
+    </label>
   );
 };

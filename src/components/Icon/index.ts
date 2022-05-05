@@ -1,2 +1,2 @@
 export * from "./Icon";
-export * from "./css";
+export * from "./Icon.css";

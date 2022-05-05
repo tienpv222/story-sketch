@@ -5,23 +5,7 @@ export type StyleClass = `_${string}`;
 export type StyleVar = `--${string}`;
 export type StyleRgb = `--rgb-${string}`;
 
-export const createModuleUid = (modulePath: string) => {
-  let id = 0;
-  return () => hash(`${modulePath}${++id}`);
-};
-
-export const createModuleStyle = (moduleUrl: string, layer: string) => {
-  const createUid = createModuleUid(moduleUrl);
-
-  return {
-    createClass: () => `_${createUid()}` as StyleClass,
-    createVar: () => `--${createUid()}` as StyleVar,
-    createRgb: () => `--rgb-${createUid()}` as StyleRgb,
-    addStyle: (style: string | CSSObject) => addStyle(style, layer),
-  };
-};
-
-export const addStyle = (style: string | CSSObject, layer: string) => {
+const addStyle = (layer: string, style: string | CSSObject) => {
   if (typeof style === "string") {
     injectGlobal(`@layer ${layer} {${style}}`);
   } else {
@@ -31,7 +15,7 @@ export const addStyle = (style: string | CSSObject, layer: string) => {
   }
 };
 
-export const resolveStyle = (style: CSSObject): CSSObject => {
+const resolveStyle = (style: CSSObject): CSSObject => {
   return Object.fromEntries(
     Object.entries(style).map(([key, value]) => {
       key = key.replaceAll("_", "._");
@@ -54,11 +38,14 @@ export const resolveStyle = (style: CSSObject): CSSObject => {
   );
 };
 
-export const createTokens = <TYPE, NAMES extends readonly (number | string)[]>(
-  creator: () => TYPE,
-  names: NAMES
-) => {
-  return Object.fromEntries(
-    names.map((value) => [value, creator()])
-  ) as Readonly<Record<NAMES[number], TYPE>>;
+export const createModuleStyle = (modulePath: string, layer: string) => {
+  let id = 0;
+  const createUid = () => hash(`${modulePath}${++id}`);
+
+  return {
+    createClass: () => `_${createUid()}` as StyleClass,
+    createVar: () => `--${createUid()}` as StyleVar,
+    createRgb: () => `--rgb-${createUid()}` as StyleRgb,
+    addStyle: (style: string | CSSObject) => addStyle(layer, style),
+  };
 };

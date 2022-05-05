@@ -4,23 +4,27 @@ import { raf } from "/src/utils/common";
 
 export type AppearProps = {
   when?: boolean;
-  transition: string;
+  transition?: string;
   children?: JSX.Element;
 };
 
+export const getTransitionProps = (transition = "") => {
+  return transition.split(",").map((prop) => prop.trim());
+};
+
 export const Appear = (props: AppearProps) => {
-  const [getElement, setElement] = createSignal<HTMLElement | null>(null);
-  const transitions = props.transition.split(/\s*,\s*/);
-  const transitionings = new Set<string>();
+  const [getElement, setElement] = createSignal<HTMLElement>();
+  const transitionProps = getTransitionProps(props.transition);
+  const transitioningProps = new Set<string>();
 
   const onTransitionEnd = (event: TransitionEvent) => {
-    transitionings.delete(event.propertyName);
-    if (transitionings.size) return;
+    transitioningProps.delete(event.propertyName);
+    if (transitioningProps.size) return;
 
     if (props.when) {
-      getElement()!.removeEventListener("transitionend", onTransitionEnd);
+      getElement()?.removeEventListener("transitionend", onTransitionEnd);
     } else {
-      setElement(null);
+      setElement();
     }
   };
 
@@ -39,8 +43,8 @@ export const Appear = (props: AppearProps) => {
         element = setElement(children);
       }
 
-      if (!transitionings.size) {
-        transitions.forEach(transitionings.add, transitionings);
+      if (!transitioningProps.size) {
+        transitionProps.forEach(Set.prototype.add, transitioningProps);
         element.addEventListener("transitionend", onTransitionEnd);
       }
 

@@ -13,6 +13,7 @@ export default defineConfig({
       imports: {
         "/src/directives/theme": ["theme"],
         "/src/directives/classes": ["classes"],
+        "/src/directives/validity": ["validity"],
       },
       dts: false,
     }),

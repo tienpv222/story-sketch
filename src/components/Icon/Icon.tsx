@@ -1,18 +1,19 @@
 import { ComponentProps, splitProps } from "solid-js";
-import { ICON } from "./css";
+import { ICON } from "./Icon.css";
+import { getRootProps } from "/src/utils/solid";
 
-export type IconProps = ComponentProps<"div"> & {
+export type IconProps = {
   src?: string;
-};
+} & ComponentProps<"div">;
 
 export const Icon = (props: IconProps) => {
-  const [, attrs] = splitProps(props, ["src"]);
+  const rootProps = getRootProps(props, ["src"]);
 
   return (
     <div
-      {...attrs}
-      classList={{ [ICON.ROOT]: true }}
       style={{ [ICON.SRC]: `url(${props.src})` }}
+      classList={{ [ICON.ROOT]: true }}
+      {...rootProps}
     />
   );
 };

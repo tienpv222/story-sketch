@@ -13,7 +13,6 @@ addStyle({
   [APP.ROOT]: {
     width: "100vw",
     height: "100vh",
-    // display: "flex",
     fontFamily: '"Source Sans 3"',
   },
 

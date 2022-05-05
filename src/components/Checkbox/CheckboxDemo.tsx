@@ -4,8 +4,10 @@ import { Checkbox, CheckboxState } from "./Checkbox";
 import { CHECKBOX_DEMO } from "./CheckboxDemo.css";
 
 export const CheckboxDemo = () => {
-  const onIndeterminateClick = (state: CheckboxState) => {
-    batch(() => {
+  const onIndeterminateClick = (state: CheckboxState, event: MouseEvent) => {
+    event.preventDefault();
+
+    setTimeout(batch, 0, () => {
       if (state.indeterminate) {
         state.selected = true;
         state.indeterminate = false;
@@ -36,7 +38,7 @@ export const CheckboxDemo = () => {
       <Checkbox
         state={state.default}
         label="Indeterminate"
-        inputProps={{ onClick: [onIndeterminateClick, state.default] }}
+        Input_onClick={[onIndeterminateClick, state.default]}
       />
 
       <p>Emphasized</p>
@@ -45,7 +47,7 @@ export const CheckboxDemo = () => {
         state={state.emphasized}
         label="Indeterminate"
         emphasized
-        inputProps={{ onClick: [onIndeterminateClick, state.emphasized] }}
+        Input_onClick={[onIndeterminateClick, state.emphasized]}
       />
 
       <p>Invalid</p>
@@ -53,8 +55,8 @@ export const CheckboxDemo = () => {
       <Checkbox
         state={state.invalid}
         label="Indeterminate"
-        invalid="any"
-        inputProps={{ onClick: [onIndeterminateClick, state.invalid] }}
+        invalid
+        Input_onClick={[onIndeterminateClick, state.invalid]}
       />
 
       <p>Disabled</p>
@@ -66,22 +68,24 @@ export const CheckboxDemo = () => {
       />
 
       <p>Readonly</p>
-      <Checkbox label="Default" readonly />
+      <Checkbox label="Default" readOnly />
       <Checkbox
         state={state.readonly}
         label="Indeterminate"
-        readonly
-        inputProps={{ onClick: [onIndeterminateClick, state.readonly] }}
+        readOnly
+        Input_onClick={[onIndeterminateClick, state.readonly]}
       />
 
       <p>Standalone</p>
       <div>
-        <Checkbox />
+        <Checkbox label="Default" Label={null} />
       </div>
       <div>
         <Checkbox
           state={state.standalone}
-          inputProps={{ onClick: [onIndeterminateClick, state.standalone] }}
+          label="Indeterminate"
+          Input_onClick={[onIndeterminateClick, state.standalone]}
+          Label={null}
         />
       </div>
     </div>

@@ -12,7 +12,7 @@ export const CHECKBOX = {
 
   SELECTED: createClass(),
   EMPHASIZED: createClass(),
-  READONLY: createClass(),
+  READ_ONLY: createClass(),
 
   INPUT_SIZE: createVar(),
   INPUT_RADIUS: createVar(),
@@ -38,7 +38,7 @@ addStyle({
     userSelect: "none",
   },
 
-  [CHECKBOX.READONLY]: {
+  [CHECKBOX.READ_ONLY]: {
     pointerEvents: "none",
     userSelect: "text",
   },
