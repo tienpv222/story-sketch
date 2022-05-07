@@ -15,24 +15,21 @@ export const CHECKBOX = {
   READ_ONLY: createClass(),
 
   INPUT_SIZE: createVar(),
-  INPUT_RADIUS: createVar(),
   INPUT_COLOR: createVar(),
   INPUT_COLOR_DEFAULT: createVar(),
   INPUT_COLOR_HOVER: createVar(),
-  INPUT_COLOR_DOWN: createVar(),
-  INPUT_MEDIUM: createVar(),
-  INPUT_DARK: createVar(),
+  INPUT_COLOR_ACTIVE: createVar(),
   LABEL_COLOR_DEFAULT: createVar(),
   LABEL_COLOR_HOVER: createVar(),
 
   ICON_TRANSITION: "transform, background-color",
-};
+} as const;
 
 addStyle({
   [CHECKBOX.ROOT]: {
     [CHECKBOX.INPUT_SIZE]: SIZE[175],
-    [CHECKBOX.INPUT_RADIUS]: SIZE[25],
     height: SIZE[400],
+    position: "relative",
     display: "inline-flex",
     alignItems: "center",
     userSelect: "none",
@@ -47,20 +44,20 @@ addStyle({
     [CHECKBOX.INPUT_COLOR]: CHECKBOX.INPUT_COLOR_DEFAULT,
     [CHECKBOX.INPUT_COLOR_DEFAULT]: GRAY[700],
     [CHECKBOX.INPUT_COLOR_HOVER]: GRAY[800],
-    [CHECKBOX.INPUT_COLOR_DOWN]: GRAY[900],
+    [CHECKBOX.INPUT_COLOR_ACTIVE]: GRAY[900],
     width: CHECKBOX.INPUT_SIZE,
     height: CHECKBOX.INPUT_SIZE,
-    position: "relative",
-    border: `${CHECKBOX.INPUT_RADIUS} solid ${CHECKBOX.INPUT_COLOR}`,
-    borderRadius: CHECKBOX.INPUT_RADIUS,
+    border: `${SIZE[25]} solid ${CHECKBOX.INPUT_COLOR}`,
+    borderRadius: SIZE[25],
+    outline: `${SIZE[25]} solid transparent`,
+    outlineOffset: SIZE[25],
+    boxShadow: `inset 0 0 ${CHECKBOX.INPUT_COLOR}`,
     background: GRAY[75],
-    transitionProperty: "border-width, background",
+    transition: "border, outline, box-shadow, background",
     transitionDuration: MOTION.MICRO,
-    transitionTimingFunction: MOTION.IN_OUT,
 
     "&:focus-visible": {
-      outline: `${SIZE[25]} solid ${BLUE[400]}`,
-      outlineOffset: SIZE[25],
+      outlineColor: BLUE[400],
     },
 
     [`${CHECKBOX.ROOT}:hover > &, &:focus-visible`]: {
@@ -68,24 +65,24 @@ addStyle({
     },
 
     [`${CHECKBOX.ROOT}:active > &, &&:active`]: {
-      [CHECKBOX.INPUT_COLOR]: CHECKBOX.INPUT_COLOR_DOWN,
+      [CHECKBOX.INPUT_COLOR]: CHECKBOX.INPUT_COLOR_ACTIVE,
     },
 
-    "&:checked, &:indeterminate": {
-      borderWidth: `calc(${CHECKBOX.INPUT_SIZE} / 2)`,
+    "&:where(:checked, :indeterminate)": {
+      boxShadow: `inset 0 0 0 calc(${CHECKBOX.INPUT_SIZE} / 2 - ${SIZE[25]}) ${CHECKBOX.INPUT_COLOR}`,
       background: CHECKBOX.INPUT_COLOR,
 
       [`${CHECKBOX.EMPHASIZED} > &`]: {
         [CHECKBOX.INPUT_COLOR_DEFAULT]: BLUE[500],
         [CHECKBOX.INPUT_COLOR_HOVER]: BLUE[600],
-        [CHECKBOX.INPUT_COLOR_DOWN]: BLUE[700],
+        [CHECKBOX.INPUT_COLOR_ACTIVE]: BLUE[700],
       },
     },
 
     "&&:invalid": {
       [CHECKBOX.INPUT_COLOR_DEFAULT]: RED[500],
       [CHECKBOX.INPUT_COLOR_HOVER]: RED[600],
-      [CHECKBOX.INPUT_COLOR_DOWN]: RED[700],
+      [CHECKBOX.INPUT_COLOR_ACTIVE]: RED[700],
     },
 
     "&&:disabled": {
@@ -96,17 +93,16 @@ addStyle({
   [CHECKBOX.ICON]: {
     width: CHECKBOX.INPUT_SIZE,
     height: CHECKBOX.INPUT_SIZE,
-    marginLeft: `calc(-1 * ${CHECKBOX.INPUT_SIZE})`,
-    padding: CHECKBOX.INPUT_RADIUS,
-    transform: "scale(0)",
-    transitionProperty: CHECKBOX.ICON_TRANSITION,
+    padding: SIZE[25],
+    position: "absolute",
+    background: GRAY[75],
+    transitionProperty: "background, transform",
     transitionDuration: MOTION.MICRO,
-    transitionTimingFunction: MOTION.IN_OUT,
     pointerEvents: "none",
 
-    [`&${APPEARED}`]: {
-      transform: "none",
-      background: GRAY[75],
+    [`&:not(${APPEARED})`]: {
+      transform: "scale(0)",
+      background: "none",
     },
   },
 

@@ -78,14 +78,14 @@ export const CheckboxDemo = () => {
 
       <p>Standalone</p>
       <div>
-        <Checkbox label="Default" Label={null} />
+        <Checkbox label="Default" Label={false} />
       </div>
       <div>
         <Checkbox
           state={state.standalone}
           label="Indeterminate"
           Input_onClick={[onIndeterminateClick, state.standalone]}
-          Label={null}
+          Label={false}
         />
       </div>
     </div>

@@ -1,12 +1,16 @@
-import ICON_CHECKMARK from "@spectrum-css/icon/medium/Checkmark100.svg";
-import ICON_DASH from "@spectrum-css/icon/medium/Dash100.svg";
-import { ComponentProps, Show } from "solid-js";
-import { createMutable } from "solid-js/store";
+import ICON_CHECKMARK from "@spectrum-css/icon/medium/Checkmark100.svg?inline";
+import ICON_DASH from "@spectrum-css/icon/medium/Dash100.svg?inline";
+import { ComponentProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { CHECKBOX } from "./Checkbox.css";
 import { CheckboxIcon, CheckboxIconProps } from "./CheckboxIcon";
 import { CheckboxInput, CheckboxInputProps } from "./CheckboxInput";
-import { getRootProps, getSubProps, SubProps } from "/src/utils/solid";
+import {
+  createMutableMemo,
+  getRootProps,
+  getSubProps,
+  SubProps,
+} from "/src/utils/solid";
 
 export type CheckboxState = {
   selected?: boolean;
@@ -27,7 +31,7 @@ export type CheckboxProps = {
   SubProps<"Label", "span">;
 
 export const Checkbox = (props: CheckboxProps) => {
-  const state = createMutable(props.state ?? {});
+  const state = createMutableMemo(() => props.state ?? {});
   const rootProps = getRootProps(props, [
     "state",
     "label",
@@ -50,49 +54,41 @@ export const Checkbox = (props: CheckboxProps) => {
       }}
       {...rootProps}
     >
-      <Show when={props.Input !== null}>
-        <Dynamic
-          component={props.Input ?? CheckboxInput}
-          state={state}
-          invalid={props.invalid}
-          checked={state.selected}
-          indeterminate={state.indeterminate}
-          disabled={props.disabled}
-          aria-label={props.Label === null ? props.label : undefined}
-          {...inputProps}
-          tabIndex={props.readOnly ? -1 : inputProps.tabIndex}
-        />
-      </Show>
+      <Dynamic
+        component={props.Input ?? CheckboxInput}
+        state={state}
+        invalid={props.invalid}
+        checked={state.selected}
+        indeterminate={state.indeterminate}
+        disabled={props.disabled}
+        tabIndex={props.readOnly ? -1 : undefined}
+        aria-label={props.Label === false ? props.label : undefined}
+        {...inputProps}
+      />
 
-      <Show when={props.IconSelected !== null}>
-        <Dynamic
-          component={props.IconSelected ?? CheckboxIcon}
-          when={state.selected && !state.indeterminate}
-          Icon_src={ICON_CHECKMARK}
-          {...iconSelectedProps}
-        />
-      </Show>
+      <Dynamic
+        component={props.IconSelected ?? CheckboxIcon}
+        when={state.selected && !state.indeterminate}
+        Icon_src={ICON_CHECKMARK}
+        {...iconSelectedProps}
+      />
 
-      <Show when={props.IconIndeterminate !== null}>
-        <Dynamic
-          component={props.IconSelected ?? CheckboxIcon}
-          when={state.indeterminate}
-          Icon_src={ICON_DASH}
-          {...iconIndeterminateProps}
-        />
-      </Show>
+      <Dynamic
+        component={props.IconIndeterminate ?? CheckboxIcon}
+        when={state.indeterminate}
+        Icon_src={ICON_DASH}
+        {...iconIndeterminateProps}
+      />
 
-      <Show when={props.Label !== null}>
-        <Dynamic
-          component={props.Label ?? "span"}
-          children={props.label}
-          {...labelProps}
-          classList={{
-            [CHECKBOX.LABEL]: true,
-            ...labelProps.classList,
-          }}
-        />
-      </Show>
+      <Dynamic
+        component={props.Label ?? "span"}
+        children={props.label}
+        {...labelProps}
+        classList={{
+          [CHECKBOX.LABEL]: true,
+          ...labelProps.classList,
+        }}
+      />
     </label>
   );
 };
